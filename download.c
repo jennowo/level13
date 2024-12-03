@@ -37,16 +37,6 @@ int main() {
     }
     printf("\nInitial response: %s", buffer);
 
-    // TEST Send HELO command, receive and print response
-    fprintf(s, "HELO\n"); // Remember newline
-    fflush(s);
-    if (fgets(buffer, 1000, s) == NULL) {
-        printf("Could not receive data.\n");
-        fclose(s);
-        close(fd);
-        return 1;
-    }
-    printf("HELO response: %s", buffer);
     
     // Send LIST for file listing, then print file list
     fprintf(s, "LIST\n");
