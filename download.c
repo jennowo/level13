@@ -48,19 +48,31 @@ int main() {
     }
     printf("HELO response: %s", buffer);
     
-    // Send LIST for file listing, print file list
+    // Send LIST for file listing, then print file list
     fprintf(s, "LIST\n");
     fflush(s);
 
-    printf("\nFile listing:\n");
-    while (fgets(buffer, 1000, s) != NULL) {
-        if (strcmp(buffer, ".\n") == 0) { // Check for end-of-data marker
+    printf("\n%-30s%-30s", "Filename", "Size");            // Header
+    printf("\n---------------------------------------\n");
+
+    while (fgets(buffer, 1000, s) != NULL) {   
+        if (strcmp(buffer, ".\n") == 0) {                   // Check for end-of-data marker
             break;
         }
-        printf("%s", buffer); // Print each line
+
+        int fileSize;
+        char fileName[100];
+        int getSizeName = sscanf(buffer, "%d %s", &fileSize, fileName);
+
+        // Make sure size and name was found before printing
+        if (getSizeName == 2) {
+            printf("\n%-30s", fileName); 
+            printf("%-30d", fileSize); 
+            // TODO Print size in KB, GB, etc.
+        }
     }
 
-
+    printf("\n");
     // Close connection
     fprintf(s, "QUIT\n");
     fflush(s);
