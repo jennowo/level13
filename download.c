@@ -27,7 +27,7 @@ int main() {
         return 1;
     }
 
-    // Receive initial greeting
+    // Receive and print initial greeting
     char buffer[1000];
     if (fgets(buffer, 1000, s) == NULL) {
         printf("Could not receive data.\n");
@@ -35,10 +35,26 @@ int main() {
         close(fd);
         return 1;
     }
+    printf("\tInitial response: %s", buffer);
 
-    // Print the server's initial greeting
-    printf("Server says: %s", buffer);
+    // Send HELO command, receive and print response
+    fprintf(s, "HELO\n"); // Remember newline
+    fflush(s);
+    if (fgets(buffer, 1000, s) == NULL) {
+        printf("Could not receive data.\n");
+        fclose(s);
+        close(fd);
+        return 1;
+    }
+    printf("\tHELO response: %s", buffer);
+
+
+
     
+    // Close connection
+    fprintf(s, "QUIT\n");
+    fflush(s);
+    fclose(s);
 
     return 0;
 }
