@@ -27,7 +27,7 @@ int main() {
         return 1;
     }
 
-    // Receive and print initial greeting
+    // TEST Receive and print initial greeting
     char buffer[1000];
     if (fgets(buffer, 1000, s) == NULL) {
         printf("Could not receive data.\n");
@@ -35,9 +35,9 @@ int main() {
         close(fd);
         return 1;
     }
-    printf("\tInitial response: %s", buffer);
+    printf("\nInitial response: %s", buffer);
 
-    // Send HELO command, receive and print response
+    // TEST Send HELO command, receive and print response
     fprintf(s, "HELO\n"); // Remember newline
     fflush(s);
     if (fgets(buffer, 1000, s) == NULL) {
@@ -46,11 +46,21 @@ int main() {
         close(fd);
         return 1;
     }
-    printf("\tHELO response: %s", buffer);
-
-
-
+    printf("HELO response: %s", buffer);
     
+    // Send LIST for file listing, print file list
+    fprintf(s, "LIST\n");
+    fflush(s);
+
+    printf("\nFile listing:\n");
+    while (fgets(buffer, 1000, s) != NULL) {
+        if (strcmp(buffer, ".\n") == 0) { // Check for end-of-data marker
+            break;
+        }
+        printf("%s", buffer); // Print each line
+    }
+
+
     // Close connection
     fprintf(s, "QUIT\n");
     fflush(s);
