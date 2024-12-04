@@ -45,7 +45,7 @@ void ProgressBar(int fileSize, int transferred) {
         if (i < pos) printf("-");
         else printf(" ");
     }
-    printf("] %3d%%\n\n", (int)(progress * 100));         // Percentage
+    printf("] %.2f%%\n\n", (float)(progress * 100));         // Percentage
 }
 
 void DownloadFile(FILE* s, int fd) {
