@@ -73,18 +73,14 @@ void DownloadFile(FILE* s, int fd) {
     fflush(s);
 
     if (fgets(buffer, sizeof(buffer), s) == NULL) {
-        printf("Failed to retrieve file size.\n");
-        fclose(s);
-        close(fd);
-        exit(1);
+        printf("Failed to find file size.\n");
+        return;
     }
 
     int fileSize = 0;
-    if (sscanf(buffer, "+OK %d", &fileSize) != 1 || fileSize <= 0) {
-        printf("Invalid file size.\n");
-        fclose(s);
-        close(fd);
-        exit(1);
+    if (sscanf(buffer, "+OK %d", &fileSize) != 1 || fileSize < 0) {
+        printf("Invalid file name.\n");
+        return;
     }
     printf("File size: %d bytes\n", fileSize);
 
@@ -95,28 +91,22 @@ void DownloadFile(FILE* s, int fd) {
     // Check for errors in server response
     if (fgets(buffer, sizeof(buffer), s) == NULL) {             // Check if fgets was success
         printf("Data was not received.\n");
-        fclose(s);
-        close(fd);
-        exit(1);
+        return;
     }
     if (strncmp(buffer, "-ERR", 4) == 0) {                      // Check for "-ERR"
         printf("Error retrieving file: %s", buffer);
-        fclose(s);
-        close(fd);
-        exit(1);
+        return;
     }
 
     // Save contents of server file to local file
-    FILE *destination = fopen(fileName, "wb");
+    FILE *destination = fopen(fileName, "w");
     if (!destination) {
         printf("Could not open a file for writing.\n");
-        fclose(s);
-        close(fd);
-        exit(1);
+        return;
     }
 
     int transferred = 0;                                        // Total amount transferred so far
-    while (transferred < bufferSize) {
+    while (transferred < fileSize) {
         int remaining = fileSize - transferred;
         int bytesWanted;
 
@@ -130,7 +120,7 @@ void DownloadFile(FILE* s, int fd) {
         // Read bytes wanted from server file into the buffer, check for errors?
         int bytesReceived = fread(buffer, 1, bytesWanted, s);  
         if (bytesReceived <= 0) {
-            printf("Error receiving data or unexpected end.\n");
+            printf("Error reading bytes from server file into buffer.\n");
             break;        
         }
 
