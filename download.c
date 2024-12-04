@@ -179,6 +179,9 @@ int main() {
         PrintMenu();
         scanf(" %c", &choice);
 
+        // Clear input buffer
+        while (getchar() != '\n'); 
+
         switch (tolower(choice)) {
             case 'l':
                 ListFiles(s);
